@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currículos Eleve 2026 - Painel de Acompanhamento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-page: #f8f7f4;
+            --bg-section: #ffffff;
+            --bg-subtle: #f3f2ef;
+            --bg-hover: #efeee9;
+            --text-primary: #1a1a1a;
+            --text-secondary: #5c5c5c;
+            --text-muted: #8a8a8a;
+            --border-main: #e5e3de;
+            --border-subtle: #f0eeea;
+            --status-done: #10b981;
+            --status-done-bg: rgba(16, 185, 129, 0.12);
+            --status-pending: #ef4444;
+            --status-pending-bg: rgba(239, 68, 68, 0.12);
+            --status-na: #d1d5db;
+            --status-na-bg: #f9fafb;
+            --accent-teal: #0d9488;
+            --accent-blue: #2563eb;
+            --accent-violet: #7c3aed;
+            --accent-amber: #d97706;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+        .page-wrapper { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+        .header-section { background: var(--bg-section); border-bottom: 1px solid var(--border-main); padding: 32px 0; margin-bottom: 32px; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+        .brand { display: flex; align-items: center; gap: 16px; }
+        .logo { width: 52px; height: 52px; background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 24px; color: white; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3); }
+        h1 { font-weight: 500; font-size: 1.75rem; letter-spacing: -0.02em; }
+        .subtitle { font-size: 0.9rem; color: var(--text-secondary); margin-top: 2px; }
+        .header-meta { display: flex; gap: 32px; }
+        .meta-block { text-align: right; }
+        .meta-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 4px; }
+        .meta-value { font-size: 1.75rem; font-weight: 500; color: var(--accent-teal); }
+        .meta-value-sm { font-size: 1rem; font-weight: 500; }
+        .section { background: var(--bg-section); border: 1px solid var(--border-main); border-radius: 16px; margin-bottom: 24px; overflow: hidden; }
+        .section-header { display: flex; align-items: center; gap: 14px; padding: 20px 28px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-subtle); }
+        .section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .section-title { font-weight: 500; font-size: 1.15rem; }
+        .section-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-left: auto; }
+        .section-body { padding: 24px 28px; }
+        .progress-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+        .progress-card { background: var(--bg-subtle); border-radius: 12px; padding: 20px; text-align: center; }
+        .progress-card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px; }
+        .progress-card-range { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px; }
+        .progress-ring-container { position: relative; width: 100px; height: 100px; margin: 0 auto 12px; }
+        .progress-ring { transform: rotate(-90deg); }
+        .progress-ring-bg { fill: none; stroke: #e5e7eb; stroke-width: 8; }
+        .progress-ring-fill { fill: none; stroke: var(--accent-teal); stroke-width: 8; stroke-linecap: round; }
+        .progress-ring-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: 700; }
+        .progress-stats { font-size: 0.85rem; color: var(--text-secondary); }
+        .progress-stats strong { color: var(--accent-teal); }
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        thead { background: var(--bg-subtle); }
+        th { padding: 14px 8px; text-align: center; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 500; border-bottom: 1px solid var(--border-main); }
+        th:first-child { text-align: left; padding-left: 28px; min-width: 140px; }
+        th.col-fund1 { background: rgba(16, 185, 129, 0.08); }
+        th.col-fund2a { background: rgba(37, 99, 235, 0.08); }
+        th.col-fund2b { background: rgba(124, 58, 237, 0.08); }
+        th.col-em { background: rgba(217, 119, 6, 0.08); }
+        td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; }
+        td:first-child { text-align: left; padding-left: 28px; font-weight: 500; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: var(--bg-hover); }
+        .status-done { background: var(--status-done-bg); }
+        .status-done .cell-icon { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; background: var(--status-done); color: white; font-size: 0.8rem; font-weight: 600; }
+        .status-pending { background: var(--status-pending-bg); }
+        .status-pending .cell-icon { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; background: var(--status-pending); color: white; font-size: 0.75rem; font-weight: 600; }
+        .status-na { background: var(--status-na-bg); }
+        .status-na .cell-icon { color: var(--status-na); font-size: 0.9rem; }
+        .discipline-tag { display: inline-flex; align-items: center; gap: 10px; }
+        .tag-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .legend-bar { display: flex; flex-wrap: wrap; gap: 24px; padding: 16px 28px; background: var(--bg-subtle); border-top: 1px solid var(--border-subtle); align-items: center; }
+        .legend-group { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-secondary); }
+        .legend-icon-done { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 5px; background: var(--status-done); color: white; font-size: 0.7rem; }
+        .legend-icon-pending { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 5px; background: var(--status-pending); color: white; font-size: 0.65rem; }
+        .legend-icon-na { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; color: var(--status-na); font-size: 0.9rem; }
+        .legend-separator { width: 1px; height: 20px; background: var(--border-main); margin: 0 8px; }
+        .legend-col { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; }
+        .legend-col-dot { width: 12px; height: 12px; border-radius: 3px; }
+        .footer-section { text-align: center; padding: 32px 0 48px; color: var(--text-muted); font-size: 0.85rem; }
+        .footer-section p { margin-bottom: 4px; }
+        @media (max-width: 1200px) { .progress-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .page-wrapper { padding: 0 16px; } .header-content { flex-direction: column; align-items: flex-start; } .progress-grid { grid-template-columns: 1fr 1fr; } .section-body { padding: 20px; } }
+        @media (max-width: 480px) { .progress-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <div class="page-wrapper">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="logo">E</div>
+                    <div>
+                        <h1>Currículos Padronizados</h1>
+                        <p class="subtitle">Colégio Eleve · Ano Letivo 2026</p>
+                    </div>
+                </div>
+                <div class="header-meta">
+                    <div class="meta-block">
+                        <div class="meta-label">Total Previsto</div>
+                        <div class="meta-value">80</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Concluídos</div>
+                        <div class="meta-value">66</div>
+                    </div>
+                    <div class="meta-block">
+                        <div class="meta-label">Última Atualização</div>
+                        <div class="meta-value-sm">24/11/2025</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-wrapper">
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon" style="background: rgba(13, 148, 136, 0.1); color: var(--accent-teal);">📊</div>
+                <div class="section-title">Progresso por Bloco</div>
+                <div class="section-subtitle">83% concluído no total</div>
+            </div>
+            <div class="section-body">
+                <div class="progress-grid">
+                    <div class="progress-card">
+                        <div class="progress-card-title">Fundamental I</div>
+                        <div class="progress-card-range">1º ao 3º ano</div>
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="100" height="100">
+                                <circle class="progress-ring-bg" cx="50" cy="50" r="42"/>
+                                <circle class="progress-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="66"/>
+                            </svg>
+                            <div class="progress-ring-text">75%</div>
+                        </div>
+                        <div class="progress-stats"><strong>9</strong> de 12 currículos</div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-card-title">Fundamental I</div>
+                        <div class="progress-card-range">4º ao 5º ano</div>
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="100" height="100">
+                                <circle class="progress-ring-bg" cx="50" cy="50" r="42"/>
+                                <circle class="progress-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="106" style="stroke: #2563eb;"/>
+                            </svg>
+                            <div class="progress-ring-text">60%</div>
+                        </div>
+                        <div class="progress-stats"><strong>8</strong> de 12 currículos</div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-card-title">Fundamental II</div>
+                        <div class="progress-card-range">6º ao 8º ano</div>
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="100" height="100">
+                                <circle class="progress-ring-bg" cx="50" cy="50" r="42"/>
+                                <circle class="progress-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="37" style="stroke: #7c3aed;"/>
+                            </svg>
+                            <div class="progress-ring-text">86%</div>
+                        </div>
+                        <div class="progress-stats"><strong>18</strong> de 21 currículos</div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-card-title">Fundamental II</div>
+                        <div class="progress-card-range">9º ano</div>
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="100" height="100">
+                                <circle class="progress-ring-bg" cx="50" cy="50" r="42"/>
+                                <circle class="progress-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="33" style="stroke: #7c3aed;"/>
+                            </svg>
+                            <div class="progress-ring-text">88%</div>
+                        </div>
+                        <div class="progress-stats"><strong>7</strong> de 8 currículos</div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-card-title">Ensino Médio</div>
+                        <div class="progress-card-range">1ª à 3ª série</div>
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="100" height="100">
+                                <circle class="progress-ring-bg" cx="50" cy="50" r="42"/>
+                                <circle class="progress-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="29" style="stroke: #d97706;"/>
+                            </svg>
+                            <div class="progress-ring-text">89%</div>
+                        </div>
+                        <div class="progress-stats"><strong>24</strong> de 27 currículos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--accent-blue);">📋</div>
+                <div class="section-title">Matriz de Cobertura</div>
+                <div class="section-subtitle">Disciplinas × Anos/Séries</div>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Disciplina</th>
+                            <th class="col-fund1">1º</th>
+                            <th class="col-fund1">2º</th>
+                            <th class="col-fund1">3º</th>
+                            <th class="col-fund2a">4º</th>
+                            <th class="col-fund2a">5º</th>
+                            <th class="col-fund2b">6º</th>
+                            <th class="col-fund2b">7º</th>
+                            <th class="col-fund2b">8º</th>
+                            <th class="col-fund2b">9º</th>
+                            <th class="col-em">1ª Sér.</th>
+                            <th class="col-em">2ª Sér.</th>
+                            <th class="col-em">3ª Sér.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #ec4899;"></span>Português</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #f59e0b;"></span>Matemática</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #f59e0b;"></span>Matemática 1</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #f59e0b;"></span>Matemática 2</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #f59e0b;"></span>Matemática 3</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-pending"><span class="cell-icon">✗</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #0d9488;"></span>Ciências</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #dc4a3d;"></span>Estudos Sociais</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #2563eb;"></span>Física</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #7c3aed;"></span>Química</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #059669;"></span>Biologia</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #db2777;"></span>Geografia</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="discipline-tag"><span class="tag-dot" style="background: #ea580c;"></span>História</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-na"><span class="cell-icon">—</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                            <td class="status-done"><span class="cell-icon">✓</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="legend-bar">
+                <div class="legend-group"><span class="legend-icon-done">✓</span><span>Concluído</span></div>
+                <div class="legend-group"><span class="legend-icon-pending">✗</span><span>Pendente</span></div>
+                <div class="legend-group"><span class="legend-icon-na">—</span><span>Não se aplica</span></div>
+                <div class="legend-separator"></div>
+                <div class="legend-col"><span class="legend-col-dot" style="background: rgba(16, 185, 129, 0.3);"></span><span>1º-3º ano</span></div>
+                <div class="legend-col"><span class="legend-col-dot" style="background: rgba(37, 99, 235, 0.3);"></span><span>4º-5º ano</span></div>
+                <div class="legend-col"><span class="legend-col-dot" style="background: rgba(124, 58, 237, 0.3);"></span><span>6º-9º ano</span></div>
+                <div class="legend-col"><span class="legend-col-dot" style="background: rgba(217, 119, 6, 0.3);"></span><span>Ensino Médio</span></div>
+            </div>
+        </div>
+        <div class="footer-section">
+            <p><strong>Projeto de Padronização Curricular</strong></p>
+            <p>Colégio Eleve · Ano Letivo 2026</p>
+            <p style="margin-top: 8px; font-size: 0.8rem;">66 de 80 currículos concluídos · 14 pendentes (12 Português + 2 Matemática 3)</p>
+        </div>
+    </div>
+</body>
+</html>
