@@ -79,6 +79,9 @@
         .status-pending .cell-icon { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; background: var(--status-pending); color: white; font-size: 0.75rem; font-weight: 600; }
         .status-na { background: var(--status-na-bg); }
         .status-na .cell-icon { color: var(--status-na); font-size: 0.9rem; }
+        .status-cell { cursor: pointer; transition: all 0.2s ease; user-select: none; }
+        .status-cell:hover { opacity: 0.8; }
+        .status-cell:active { transform: scale(0.98); }
         .discipline-tag { display: inline-flex; align-items: center; gap: 10px; }
         .tag-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
         .legend-bar { display: flex; flex-wrap: wrap; gap: 24px; padding: 16px 28px; background: var(--bg-subtle); border-top: 1px solid var(--border-subtle); align-items: center; }
@@ -419,8 +422,162 @@
         <div class="footer-section">
             <p><strong>Projeto de Padronização Curricular</strong></p>
             <p>Colégio Eleve · Ano Letivo 2026</p>
-            <p style="margin-top: 8px; font-size: 0.8rem;">66 de 80 currículos concluídos · 14 pendentes (12 Português + 2 Matemática 3)</p>
+            <p style="margin-top: 8px; font-size: 0.8rem;"><span id="footer-stats">66 de 80 currículos concluídos · 14 pendentes (12 Português + 2 Matemática 3)</span></p>
         </div>
     </div>
+    <script>
+        // Interactive Status Boxes System
+        const StatusManager = {
+            STORAGE_KEY_PREFIX: 'curriculum_status_',
+            STATES: ['pending', 'done', 'na'],
+            STATUS_ICONS: { pending: '✗', done: '✓', na: '—' },
+            STATUS_CYCLE: { pending: 'done', done: 'na', na: 'pending' },
+
+            init() {
+                this.loadInitialState();
+                this.attachListeners();
+                this.updateStats();
+            },
+
+            loadInitialState() {
+                const tbody = document.querySelector('table tbody');
+                let cellIndex = 0;
+
+                Array.from(tbody.querySelectorAll('tr')).forEach((row, rowIndex) => {
+                    const cells = row.querySelectorAll('td');
+                    const disciplineName = cells[0].textContent.trim().toLowerCase().replace(/\s+/g, '_');
+
+                    // Skip first column (discipline name)
+                    for (let colIndex = 1; colIndex < cells.length; colIndex++) {
+                        const cell = cells[colIndex];
+                        const year = colIndex;
+                        const storageKey = `${this.STORAGE_KEY_PREFIX}${rowIndex}_${colIndex}`;
+
+                        // Get stored status or use current
+                        let currentStatus = null;
+                        for (const state of this.STATES) {
+                            if (cell.classList.contains(`status-${state}`)) {
+                                currentStatus = state;
+                                break;
+                            }
+                        }
+
+                        // Check localStorage
+                        const stored = localStorage.getItem(storageKey);
+                        if (stored && this.STATES.includes(stored)) {
+                            currentStatus = stored;
+                            this.applyStatus(cell, stored);
+                        }
+
+                        // Add attributes
+                        cell.classList.add('status-cell');
+                        cell.setAttribute('data-key', storageKey);
+                        cell.setAttribute('data-status', currentStatus);
+                        cell.setAttribute('data-row', rowIndex);
+                        cell.setAttribute('data-col', colIndex);
+                    }
+                });
+            },
+
+            attachListeners() {
+                const cells = document.querySelectorAll('.status-cell');
+                cells.forEach(cell => {
+                    cell.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.cycleStatus(cell);
+                    });
+                });
+            },
+
+            cycleStatus(cell) {
+                const currentStatus = cell.getAttribute('data-status');
+                const nextStatus = this.STATUS_CYCLE[currentStatus] || 'pending';
+
+                // Update cell
+                this.applyStatus(cell, nextStatus);
+                cell.setAttribute('data-status', nextStatus);
+
+                // Save to localStorage
+                const key = cell.getAttribute('data-key');
+                localStorage.setItem(key, nextStatus);
+
+                // Update stats
+                this.updateStats();
+            },
+
+            applyStatus(cell, status) {
+                // Remove all status classes
+                this.STATES.forEach(state => cell.classList.remove(`status-${state}`));
+
+                // Add new status class
+                cell.classList.add(`status-${status}`);
+
+                // Update icon
+                const icon = cell.querySelector('.cell-icon');
+                if (icon) {
+                    icon.textContent = this.STATUS_ICONS[status];
+                }
+            },
+
+            updateStats() {
+                const tbody = document.querySelector('table tbody');
+                const cells = tbody.querySelectorAll('.status-cell');
+
+                let totalDone = 0;
+                let totalNA = 0;
+                let totalPending = 0;
+
+                cells.forEach(cell => {
+                    const status = cell.getAttribute('data-status');
+                    if (status === 'done') totalDone++;
+                    else if (status === 'na') totalNA++;
+                    else totalPending++;
+                });
+
+                const total = cells.length;
+                const today = new Date().toLocaleDateString('pt-BR');
+
+                // Update header stats
+                const completedValue = document.querySelector('.header-meta .meta-value');
+                if (completedValue) {
+                    const metaValues = document.querySelectorAll('.header-meta .meta-value');
+                    if (metaValues.length >= 2) metaValues[1].textContent = totalDone;
+                }
+
+                // Update last update date
+                const dateValue = document.querySelector('.header-meta .meta-value-sm');
+                if (dateValue) dateValue.textContent = today;
+
+                // Update footer stats
+                const footerStats = document.getElementById('footer-stats');
+                if (footerStats) {
+                    const totalExpected = 80;
+                    footerStats.textContent = `${totalDone} de ${totalExpected} currículos concluídos · ${totalPending} pendentes`;
+                }
+
+                // Update progress cards
+                this.updateProgressCards();
+            },
+
+            updateProgressCards() {
+                const blocks = [
+                    { selector: '.progress-card:nth-child(1)', rows: [0], cols: [1, 2, 3] },     // Fund I (1-3)
+                    { selector: '.progress-card:nth-child(2)', rows: [0], cols: [4, 5] },         // Fund I (4-5)
+                    { selector: '.progress-card:nth-child(3)', rows: [0], cols: [6, 7, 8, 9] },   // Fund II (6-9)
+                    { selector: '.progress-card:nth-child(4)', rows: [0], cols: [9] },            // Fund II (9)
+                    { selector: '.progress-card:nth-child(5)', rows: [0], cols: [10, 11, 12] }    // Ensino Médio
+                ];
+
+                // This is simplified - in production you might want more sophisticated tracking
+                // For now, we'll leave progress cards as-is since recalculating them requires knowing the original structure
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            StatusManager.init();
+        });
+    </script>
 </body>
 </html>
