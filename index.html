@@ -110,21 +110,47 @@
         .subtab-button.active { color: var(--accent-teal); border-bottom-color: var(--accent-teal); }
 
         /* CHAPTER MANAGEMENT STYLES */
-        .chapter-manager { display: grid; grid-template-columns: 300px 1fr; gap: 24px; }
-        .chapter-sidebar { background: var(--bg-subtle); border-radius: 12px; padding: 20px; max-height: 600px; overflow-y: auto; }
-        .sidebar-section { margin-bottom: 20px; }
-        .sidebar-title { font-weight: 600; font-size: 0.9rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
-        .sidebar-item { padding: 10px 12px; margin-bottom: 6px; background: var(--bg-section); border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease; border-left: 3px solid transparent; }
-        .sidebar-item:hover { background: var(--bg-hover); }
-        .sidebar-item.active { background: var(--status-done-bg); border-left-color: var(--accent-teal); color: var(--accent-teal); font-weight: 500; }
-        .sidebar-item.nested { padding-left: 24px; font-size: 0.85rem; }
-        .sidebar-item.level-2 { padding-left: 36px; }
-        .sidebar-item.level-3 { padding-left: 48px; }
+        .chapter-manager { display: block; }
+        .chapter-sidebar { display: none; }
 
         .chapter-content { background: var(--bg-section); border-radius: 12px; padding: 24px; border: 1px solid var(--border-main); }
-        .chapter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle); }
-        .chapter-title { font-size: 1.4rem; font-weight: 500; }
-        .chapter-actions { display: flex; gap: 12px; }
+
+        /* Breadcrumb */
+        .breadcrumb { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; font-size: 0.95rem; color: var(--text-secondary); }
+        .breadcrumb-item { display: flex; align-items: center; gap: 8px; }
+        .breadcrumb-separator { color: var(--text-muted); }
+        .breadcrumb-back { margin-right: auto; }
+
+        /* Grid de Bimestres */
+        .bimestres-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .bimestre-card { background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(13, 148, 136, 0.05) 100%); border: 2px solid var(--border-main); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+        .bimestre-card:hover { border-color: var(--accent-teal); box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15); transform: translateY(-2px); }
+        .bimestre-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .bimestre-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; }
+        .bimestre-stats { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+        .bimestre-btn { padding: 8px 16px; background: var(--accent-teal); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
+        .bimestre-btn:hover { background: #0d8b7f; }
+
+        /* Grid de Unidades */
+        .unidades-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .unidade-card { background: var(--bg-subtle); border-radius: 12px; padding: 20px; border-left: 4px solid var(--accent-teal); cursor: pointer; transition: all 0.2s ease; }
+        .unidade-card:hover { background: var(--bg-hover); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+        .unidade-icon { font-size: 2rem; margin-bottom: 12px; }
+        .unidade-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+        .unidade-name { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px; padding: 8px; background: var(--bg-section); border-radius: 6px; border: 1px solid var(--border-main); }
+        .unidade-actions { display: flex; gap: 8px; }
+        .unidade-actions .btn { flex: 1; }
+
+        /* Lista de Capítulos */
+        .chapters-list { margin-top: 24px; }
+        .chapter-item { background: var(--bg-subtle); border-radius: 10px; padding: 16px; margin-bottom: 12px; border-left: 4px solid var(--accent-teal); transition: all 0.2s ease; cursor: pointer; }
+        .chapter-item:hover { background: var(--bg-hover); }
+        .chapter-item-title { font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .chapter-item-content { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .chapter-item-actions { display: flex; gap: 8px; }
+
+        /* Button grid */
+        .button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 24px; }
 
         .btn { padding: 10px 16px; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
         .btn-primary { background: var(--accent-teal); color: white; }
@@ -537,14 +563,6 @@
 
                     <!-- CHAPTER MANAGER -->
                     <div class="chapter-manager">
-                        <!-- SIDEBAR -->
-                        <div class="chapter-sidebar" id="chapterSidebar">
-                            <div class="sidebar-section">
-                                <div class="sidebar-title">📍 Navegação</div>
-                                <div id="navigationTree" style="max-height: 400px; overflow-y: auto;"></div>
-                            </div>
-                        </div>
-
                         <!-- MAIN CONTENT -->
                         <div class="chapter-content">
                             <div id="contentArea">
@@ -914,111 +932,26 @@
                 this.currentUnidade = null;
                 this.currentChapter = null;
                 this.renderDisciplines();
-                this.renderNavigationTree();
                 this.showDisciplineContent();
             },
 
-            renderNavigationTree() {
-                const navTree = document.getElementById('navigationTree');
-                navTree.innerHTML = '';
-
-                if (!this.currentYear || !this.currentDiscipline) return;
-
-                const bimestres = this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres;
-                Object.keys(bimestres).sort().forEach(bimNum => {
-                    const bimItem = document.createElement('div');
-                    bimItem.className = `sidebar-item ${this.currentBimester === bimNum ? 'active' : ''}`;
-                    bimItem.textContent = `📗 Bimestre ${bimNum}`;
-                    bimItem.addEventListener('click', () => this.selectBimester(bimNum));
-                    navTree.appendChild(bimItem);
-
-                    if (this.currentBimester === bimNum) {
-                        const unidades = bimestres[bimNum].unidades;
-                        Object.keys(unidades).sort().forEach(unNum => {
-                            const unItem = document.createElement('div');
-                            unItem.className = `sidebar-item level-2 ${this.currentUnidade === unNum ? 'active' : ''}`;
-                            unItem.textContent = `📝 Unidade ${unNum}`;
-                            unItem.addEventListener('click', () => this.selectUnidade(unNum));
-                            navTree.appendChild(unItem);
-
-                            if (this.currentUnidade === unNum) {
-                                const capitulos = unidades[unNum].capitulos;
-                                Object.keys(capitulos).sort().forEach(capNum => {
-                                    const capItem = document.createElement('div');
-                                    capItem.className = `sidebar-item level-3 ${this.currentChapter === capNum ? 'active' : ''}`;
-                                    capItem.textContent = `📄 Capítulo ${capNum}`;
-                                    capItem.addEventListener('click', () => this.selectChapter(capNum));
-                                    navTree.appendChild(capItem);
-                                });
-                                const addCapBtn = document.createElement('button');
-                                addCapBtn.className = 'btn btn-primary btn-sm';
-                                addCapBtn.style.width = '100%';
-                                addCapBtn.style.marginTop = '8px';
-                                addCapBtn.style.marginLeft = '48px';
-                                addCapBtn.textContent = '+ Capítulo';
-                                addCapBtn.addEventListener('click', (e) => {
-                                    e.stopPropagation();
-                                    this.addChapterPrompt();
-                                });
-                                navTree.appendChild(addCapBtn);
-                            }
-                        });
-                        const addUnBtn = document.createElement('button');
-                        addUnBtn.className = 'btn btn-primary btn-sm';
-                        addUnBtn.style.width = '100%';
-                        addUnBtn.style.marginTop = '8px';
-                        addUnBtn.style.marginLeft = '24px';
-                        addUnBtn.textContent = '+ Unidade';
-                        addUnBtn.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            this.addUnidadePrompt();
-                        });
-                        navTree.appendChild(addUnBtn);
-                    }
-                });
-            },
 
             selectBimester(bimNum) {
                 this.currentBimester = bimNum;
                 this.currentUnidade = null;
                 this.currentChapter = null;
-                this.renderNavigationTree();
                 this.showBimesterContent();
             },
 
             selectUnidade(unNum) {
                 this.currentUnidade = unNum;
                 this.currentChapter = null;
-                this.renderNavigationTree();
                 this.showUnidadeContent();
             },
 
             selectChapter(capNum) {
                 this.currentChapter = capNum;
-                this.renderNavigationTree();
                 this.showChapterContent();
-            },
-
-            addUnidadePrompt() {
-                const num = prompt('Número da Unidade:');
-                if (num && num.trim()) {
-                    this.addUnidade(num.trim());
-                }
-            },
-
-            addUnidade(num) {
-                if (!this.currentYear || !this.currentBimester || !this.currentDiscipline) {
-                    alert('Selecione um bimestre primeiro!');
-                    return;
-                }
-                const unidades = this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres[this.currentBimester].unidades;
-                if (unidades[num]) {
-                    alert('Unidade já existe!');
-                    return;
-                }
-                unidades[num] = { nome: `Unidade ${num}`, capitulos: {} };
-                this.saveData();
-                this.renderNavigationTree();
             },
 
             addChapterPrompt() {
@@ -1044,7 +977,6 @@
                     status: 'planned'
                 };
                 this.saveData();
-                this.renderNavigationTree();
                 this.selectChapter(num);
             },
 
@@ -1055,18 +987,33 @@
                     return;
                 }
 
-                const html = `
-                    <div class="chapter-header">
-                        <div>
-                            <div class="chapter-title">📚 ${this.currentDiscipline}</div>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">${this.currentYear}</p>
+                const bimestres = this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres;
+                let bimestresHtml = '';
+
+                Object.keys(bimestres).sort().forEach(bimNum => {
+                    const unidadesCount = Object.keys(bimestres[bimNum].unidades).length;
+                    const capitulosCount = Object.values(bimestres[bimNum].unidades).reduce((acc, un) => acc + Object.keys(un.capitulos).length, 0);
+
+                    bimestresHtml += `
+                        <div class="bimestre-card" onclick="ChapterManager.selectBimester('${bimNum}')">
+                            <div class="bimestre-icon">📗</div>
+                            <div class="bimestre-title">Bimestre ${bimNum}</div>
+                            <div class="bimestre-stats">
+                                <div>${unidadesCount} unidades</div>
+                                <div>${capitulosCount} capítulos</div>
+                            </div>
+                            <button class="bimestre-btn" onclick="event.stopPropagation(); ChapterManager.selectBimester('${bimNum}');">Ver</button>
                         </div>
+                    `;
+                });
+
+                const html = `
+                    <div style="margin-bottom: 24px;">
+                        <div style="font-size: 1.8rem; font-weight: 600; margin-bottom: 8px;">📚 ${this.currentDiscipline}</div>
+                        <p style="font-size: 0.95rem; color: var(--text-secondary);">${this.currentYear}</p>
                     </div>
-                    <div style="background: var(--bg-subtle); padding: 20px; border-radius: 10px;">
-                        <p><strong>Bimestres:</strong> 4</p>
-                        <p><strong>Unidades por Bimestre:</strong> 2</p>
-                        <p><strong>Total de Capítulos:</strong> ${this.countChapters()}</p>
-                        <p style="margin-top: 16px; color: var(--text-muted); font-size: 0.9rem;">Selecione um bimestre na navegação para gerenciar seus conteúdos.</p>
+                    <div class="bimestres-grid">
+                        ${bimestresHtml}
                     </div>
                 `;
                 content.innerHTML = html;
@@ -1080,20 +1027,34 @@
                 }
 
                 const bimData = this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres[this.currentBimester];
-                const unidadesCount = Object.keys(bimData.unidades).length;
-                const capitulosCount = Object.values(bimData.unidades).reduce((acc, un) => acc + Object.keys(un.capitulos).length, 0);
+                let unidadesHtml = '';
+
+                Object.keys(bimData.unidades).sort().forEach(unNum => {
+                    const unidadeData = bimData.unidades[unNum];
+                    const capitulosCount = Object.keys(unidadeData.capitulos).length;
+
+                    unidadesHtml += `
+                        <div class="unidade-card" onclick="ChapterManager.selectUnidade('${unNum}')">
+                            <div class="unidade-icon">📝</div>
+                            <div class="unidade-title">Unidade ${unNum}</div>
+                            <div class="unidade-name">${unidadeData.nome}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">${capitulosCount} capítulos</div>
+                            <div class="unidade-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); ChapterManager.editUnidadeName('${unNum}')">✏️ Editar</button>
+                                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); ChapterManager.selectUnidade('${unNum}')">Ver →</button>
+                            </div>
+                        </div>
+                    `;
+                });
 
                 const html = `
-                    <div class="chapter-header">
-                        <div>
-                            <div class="chapter-title">📗 Bimestre ${this.currentBimester}</div>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">${this.currentYear}</p>
-                        </div>
+                    <div style="margin-bottom: 24px;">
+                        <button class="btn btn-secondary btn-sm" onclick="ChapterManager.selectDiscipline('${this.currentDiscipline}')">← Voltar</button>
+                        <div style="font-size: 1.8rem; font-weight: 600; margin: 16px 0 8px 0;">📗 Bimestre ${this.currentBimester}</div>
+                        <p style="font-size: 0.95rem; color: var(--text-secondary);">${this.currentDiscipline} · ${this.currentYear}</p>
                     </div>
-                    <div style="background: var(--bg-subtle); padding: 20px; border-radius: 10px;">
-                        <p><strong>Unidades:</strong> ${unidadesCount}</p>
-                        <p><strong>Total de Capítulos:</strong> ${capitulosCount}</p>
-                        <p style="margin-top: 16px; color: var(--text-muted); font-size: 0.9rem;">Selecione uma unidade para gerenciar seus capítulos.</p>
+                    <div class="unidades-grid">
+                        ${unidadesHtml}
                     </div>
                 `;
                 content.innerHTML = html;
@@ -1107,26 +1068,53 @@
                 }
 
                 const unidadeData = this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres[this.currentBimester].unidades[this.currentUnidade];
-                const capitulosCount = Object.keys(unidadeData.capitulos).length;
+                let capitulosHtml = '';
+
+                Object.keys(unidadeData.capitulos).sort((a, b) => parseInt(a) - parseInt(b)).forEach(capNum => {
+                    const capData = unidadeData.capitulos[capNum];
+                    const statusMap = { planned: 'Planejado', progress: 'Em Progresso', done: 'Concluído' };
+                    const statusClass = { planned: 'status-badge-planned', progress: 'status-badge-progress', done: 'status-badge-done' };
+
+                    capitulosHtml += `
+                        <div class="chapter-item" onclick="ChapterManager.selectChapter('${capNum}')">
+                            <div class="chapter-item-title">
+                                <span>📄 Capítulo ${capNum} - ${capData.titulo}</span>
+                                <span class="status-badge ${statusClass[capData.status] || 'status-badge-planned'}">${statusMap[capData.status] || 'Planejado'}</span>
+                            </div>
+                            <div class="chapter-item-content">
+                                ${capData.conteudos ? capData.conteudos.substring(0, 100) + (capData.conteudos.length > 100 ? '...' : '') : 'Sem conteúdo'}
+                            </div>
+                            <div class="chapter-item-actions">
+                                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); ChapterManager.selectChapter('${capNum}')">✏️ Editar</button>
+                            </div>
+                        </div>
+                    `;
+                });
 
                 const html = `
-                    <div class="chapter-header">
-                        <div>
-                            <div class="chapter-title">📝 ${unidadeData.nome}</div>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">Bimestre ${this.currentBimester} · ${this.currentDiscipline}</p>
-                        </div>
+                    <div style="margin-bottom: 24px;">
+                        <button class="btn btn-secondary btn-sm" onclick="ChapterManager.selectBimester('${this.currentBimester}')">← Voltar</button>
+                        <div style="font-size: 1.8rem; font-weight: 600; margin: 16px 0 8px 0;">📝 ${unidadeData.nome}</div>
+                        <p style="font-size: 0.95rem; color: var(--text-secondary);">Bimestre ${this.currentBimester} · ${this.currentDiscipline} · ${this.currentYear}</p>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Nome da Unidade</label>
                         <input type="text" id="unidadeName" class="form-control" value="${unidadeData.nome}">
+                        <small style="color: var(--text-muted); margin-top: 4px; display: block;">Mude o nome se necessário. Salva automaticamente.</small>
                     </div>
 
-                    <div style="background: var(--bg-subtle); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                        <p><strong>Capítulos:</strong> ${capitulosCount}</p>
-                        <p style="margin-top: 16px; color: var(--text-muted); font-size: 0.9rem;">Selecione um capítulo para gerenciar seus conteúdos ou crie um novo.</p>
+                    <div style="background: var(--bg-subtle); padding: 16px; border-radius: 10px; margin-bottom: 24px;">
+                        <p style="margin: 0;"><strong>${Object.keys(unidadeData.capitulos).length} capítulo(s)</strong></p>
                     </div>
-                    <div class="chapters-list" id="capitulesList"></div>
+
+                    <div class="chapters-list" id="capitulesList">
+                        ${capitulosHtml || '<p style="color: var(--text-muted); text-align: center; padding: 24px;">Nenhum capítulo criado. Clique em "+ Novo Capítulo"</p>'}
+                    </div>
+
+                    <div style="margin-top: 24px;">
+                        <button class="btn btn-primary" style="width: 100%;" onclick="ChapterManager.addChapterPrompt()">+ Novo Capítulo</button>
+                    </div>
                 `;
                 content.innerHTML = html;
 
@@ -1134,9 +1122,17 @@
                 document.getElementById('unidadeName').addEventListener('blur', (e) => {
                     unidadeData.nome = e.target.value || `Unidade ${this.currentUnidade}`;
                     this.saveData();
+                    this.showUnidadeContent(); // Refresh para mostrar nome atualizado
                 });
+            },
 
-                this.renderChaptersList();
+            editUnidadeName(unNum) {
+                const newName = prompt('Nome da Unidade:', this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres[this.currentBimester].unidades[unNum].nome);
+                if (newName && newName.trim()) {
+                    this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres[this.currentBimester].unidades[unNum].nome = newName.trim();
+                    this.saveData();
+                    this.showBimesterContent();
+                }
             },
 
             showChapterContent() {
@@ -1209,31 +1205,6 @@
                 });
             },
 
-            renderChaptersList() {
-                const unidadeData = this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres[this.currentBimester].unidades[this.currentUnidade];
-                const capitulesList = document.getElementById('capitulesList');
-
-                const html = Object.entries(unidadeData.capitulos).map(([num, data]) => {
-                    const statusMap = { planned: 'Planejado', progress: 'Em Progresso', done: 'Concluído' };
-                    const statusClass = {
-                        planned: 'status-badge-planned',
-                        progress: 'status-badge-progress',
-                        done: 'status-badge-done'
-                    };
-                    return `
-                        <div class="chapter-item" onclick="ChapterManager.selectChapter('${num}')">
-                            <div class="chapter-item-title">
-                                <span>📄 Capítulo ${num}</span>
-                                <span class="status-badge ${statusClass[data.status] || 'status-badge-planned'}">${statusMap[data.status] || 'Planejado'}</span>
-                            </div>
-                            <div class="chapter-item-content">${data.titulo}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted);">${data.conteudos ? data.conteudos.split('\n').length : 0} linhas de conteúdo</div>
-                        </div>
-                    `;
-                }).join('');
-
-                capitulesList.innerHTML = html || '<p style="color: var(--text-muted);">Nenhum capítulo nesta unidade.</p>';
-            },
 
             countChapters() {
                 if (!this.currentYear || !this.currentDiscipline) return 0;
