@@ -432,6 +432,13 @@
             STATES: ['pending', 'done', 'na'],
             STATUS_ICONS: { pending: '✗', done: '✓', na: '—' },
             STATUS_CYCLE: { pending: 'done', done: 'na', na: 'pending' },
+            PROGRESS_CARDS: [
+                { cardIndex: 0, cols: [1, 2, 3] },           // Fund I (1-3)
+                { cardIndex: 1, cols: [4, 5] },              // Fund I (4-5)
+                { cardIndex: 2, cols: [6, 7, 8] },           // Fund II (6-8)
+                { cardIndex: 3, cols: [9] },                 // Fund II (9)
+                { cardIndex: 4, cols: [10, 11, 12] }         // Ensino Médio (1-3)
+            ],
 
             init() {
                 this.loadInitialState();
@@ -441,16 +448,13 @@
 
             loadInitialState() {
                 const tbody = document.querySelector('table tbody');
-                let cellIndex = 0;
 
                 Array.from(tbody.querySelectorAll('tr')).forEach((row, rowIndex) => {
                     const cells = row.querySelectorAll('td');
-                    const disciplineName = cells[0].textContent.trim().toLowerCase().replace(/\s+/g, '_');
 
                     // Skip first column (discipline name)
                     for (let colIndex = 1; colIndex < cells.length; colIndex++) {
                         const cell = cells[colIndex];
-                        const year = colIndex;
                         const storageKey = `${this.STORAGE_KEY_PREFIX}${rowIndex}_${colIndex}`;
 
                         // Get stored status or use current
@@ -535,15 +539,12 @@
                     else totalPending++;
                 });
 
-                const total = cells.length;
+                const totalApplicable = totalDone + totalPending; // Excluir N/A
                 const today = new Date().toLocaleDateString('pt-BR');
 
                 // Update header stats
-                const completedValue = document.querySelector('.header-meta .meta-value');
-                if (completedValue) {
-                    const metaValues = document.querySelectorAll('.header-meta .meta-value');
-                    if (metaValues.length >= 2) metaValues[1].textContent = totalDone;
-                }
+                const metaValues = document.querySelectorAll('.header-meta .meta-value');
+                if (metaValues.length >= 2) metaValues[1].textContent = totalDone;
 
                 // Update last update date
                 const dateValue = document.querySelector('.header-meta .meta-value-sm');
@@ -561,16 +562,84 @@
             },
 
             updateProgressCards() {
-                const blocks = [
-                    { selector: '.progress-card:nth-child(1)', rows: [0], cols: [1, 2, 3] },     // Fund I (1-3)
-                    { selector: '.progress-card:nth-child(2)', rows: [0], cols: [4, 5] },         // Fund I (4-5)
-                    { selector: '.progress-card:nth-child(3)', rows: [0], cols: [6, 7, 8, 9] },   // Fund II (6-9)
-                    { selector: '.progress-card:nth-child(4)', rows: [0], cols: [9] },            // Fund II (9)
-                    { selector: '.progress-card:nth-child(5)', rows: [0], cols: [10, 11, 12] }    // Ensino Médio
-                ];
+                const tbody = document.querySelector('table tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
 
-                // This is simplified - in production you might want more sophisticated tracking
-                // For now, we'll leave progress cards as-is since recalculating them requires knowing the original structure
+                this.PROGRESS_CARDS.forEach((block) => {
+                    let blockDone = 0;
+                    let blockTotal = 0;
+
+                    // Contar apenas células aplicáveis (não N/A)
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        block.cols.forEach(colIndex => {
+                            if (cells[colIndex]) {
+                                const status = cells[colIndex].getAttribute('data-status');
+                                if (status !== 'na') {
+                                    blockTotal++;
+                                    if (status === 'done') {
+                                        blockDone++;
+                                    }
+                                }
+                            }
+                        });
+                    });
+
+                    if (blockTotal === 0) return;
+
+                    const percentage = Math.round((blockDone / blockTotal) * 100);
+                    const circumference = 264; // 2 * π * 42
+                    const strokeDashOffset = circumference * (1 - percentage / 100);
+
+                    // Update card
+                    const card = document.querySelector(`.progress-card:nth-child(${block.cardIndex + 1})`);
+                    if (card) {
+                        // Update percentage text
+                        const percentText = card.querySelector('.progress-ring-text');
+                        if (percentText) percentText.textContent = `${percentage}%`;
+
+                        // Update progress ring
+                        const circle = card.querySelector('.progress-ring-fill');
+                        if (circle) {
+                            circle.setAttribute('stroke-dashoffset', strokeDashOffset.toFixed(1));
+                        }
+
+                        // Update stats
+                        const stats = card.querySelector('.progress-stats');
+                        if (stats) {
+                            stats.innerHTML = `<strong>${blockDone}</strong> de ${blockTotal} currículos`;
+                        }
+                    }
+                });
+
+                // Update overall progress in section header
+                this.updateOverallProgress();
+            },
+
+            updateOverallProgress() {
+                const tbody = document.querySelector('table tbody');
+                const cells = tbody.querySelectorAll('.status-cell');
+
+                let totalDone = 0;
+                let totalApplicable = 0;
+
+                cells.forEach(cell => {
+                    const status = cell.getAttribute('data-status');
+                    if (status !== 'na') {
+                        totalApplicable++;
+                        if (status === 'done') {
+                            totalDone++;
+                        }
+                    }
+                });
+
+                const overallPercentage = totalApplicable > 0 ? Math.round((totalDone / totalApplicable) * 100) : 0;
+
+                // Update section subtitle
+                const subtitle = document.querySelector('.section-header .section-subtitle');
+                if (subtitle) {
+                    subtitle.textContent = `${overallPercentage}% concluído no total`;
+                }
             }
         };
 
