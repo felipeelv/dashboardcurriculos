@@ -511,9 +511,8 @@
                         <!-- SIDEBAR -->
                         <div class="chapter-sidebar" id="chapterSidebar">
                             <div class="sidebar-section">
-                                <div class="sidebar-title">📅 Anos</div>
+                                <div class="sidebar-title">📚 Série/Ano</div>
                                 <div id="yearsList"></div>
-                                <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 12px;" id="addYearBtn">+ Novo Ano</button>
                             </div>
                             <div class="sidebar-section">
                                 <div class="sidebar-title">📍 Navegação</div>
@@ -789,6 +788,7 @@
         // CHAPTER MANAGER - Handle content hierarchy
         const ChapterManager = {
             STORAGE_KEY: 'chapters_data',
+            YEARS: ['1º ano', '2º ano', '3º ano', '4º ano', '5º ano', '6º ano', '7º ano', '8º ano', '9º ano', '1ª Série', '2ª Série', '3ª Série'],
             currentYear: null,
             currentBimester: null,
             currentUnidade: null,
@@ -797,7 +797,6 @@
 
             init() {
                 this.loadData();
-                this.attachEventListeners();
                 this.renderYears();
             },
 
@@ -808,64 +807,40 @@
                         this.data = JSON.parse(stored);
                     } catch (e) {
                         console.error('Erro ao carregar dados:', e);
-                        this.data = {};
+                        this.data = this.initializeData();
                     }
                 } else {
-                    this.data = {
-                        '2026': {
-                            bimestres: {
-                                '1': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
-                                '2': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
-                                '3': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
-                                '4': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } }
-                            }
-                        }
-                    };
+                    this.data = this.initializeData();
                     this.saveData();
                 }
+            },
+
+            initializeData() {
+                const data = {};
+                this.YEARS.forEach(year => {
+                    data[year] = {
+                        bimestres: {
+                            '1': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
+                            '2': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
+                            '3': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
+                            '4': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } }
+                        }
+                    };
+                });
+                return data;
             },
 
             saveData() {
                 localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.data));
             },
 
-            attachEventListeners() {
-                document.getElementById('addYearBtn').addEventListener('click', () => this.addYearPrompt());
-            },
-
-            addYearPrompt() {
-                const year = prompt('Digite o ano (ex: 2026):');
-                if (year && year.trim()) {
-                    this.addYear(year.trim());
-                }
-            },
-
-            addYear(year) {
-                if (this.data[year]) {
-                    alert('Ano já existe!');
-                    return;
-                }
-                this.data[year] = {
-                    bimestres: {
-                        '1': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
-                        '2': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
-                        '3': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } },
-                        '4': { unidades: { '1': { capitulos: {} }, '2': { capitulos: {} } } }
-                    }
-                };
-                this.saveData();
-                this.selectYear(year);
-                this.renderYears();
-                this.renderNavigationTree();
-            },
-
             renderYears() {
                 const yearsList = document.getElementById('yearsList');
                 yearsList.innerHTML = '';
-                Object.keys(this.data).sort().reverse().forEach(year => {
+                this.YEARS.forEach(year => {
                     const yearBtn = document.createElement('div');
                     yearBtn.className = `sidebar-item ${this.currentYear === year ? 'active' : ''}`;
-                    yearBtn.textContent = `📅 ${year}`;
+                    yearBtn.textContent = `📚 ${year}`;
                     yearBtn.addEventListener('click', () => this.selectYear(year));
                     yearsList.appendChild(yearBtn);
                 });
@@ -1014,17 +989,14 @@
             showYearContent() {
                 const content = document.getElementById('contentArea');
                 if (!this.currentYear) {
-                    content.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-text">Selecione um ano para começar</div></div>`;
+                    content.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📚</div><div class="empty-state-text">Selecione uma série/ano para começar</div></div>`;
                     return;
                 }
 
                 const html = `
                     <div class="chapter-header">
                         <div>
-                            <div class="chapter-title">📅 Ano ${this.currentYear}</div>
-                        </div>
-                        <div class="chapter-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="ChapterManager.deleteYearPrompt()">🗑️ Deletar</button>
+                            <div class="chapter-title">📚 ${this.currentYear}</div>
                         </div>
                     </div>
                     <div style="background: var(--bg-subtle); padding: 20px; border-radius: 10px;">
@@ -1229,18 +1201,6 @@
                 }).join('');
 
                 capitulesList.innerHTML = html || '<p style="color: var(--text-muted);">Nenhum capítulo nesta unidade.</p>';
-            },
-
-            deleteYearPrompt() {
-                if (!confirm(`Deseja deletar o ano ${this.currentYear} e todos seus dados?`)) return;
-                delete this.data[this.currentYear];
-                this.currentYear = null;
-                this.currentBimester = null;
-                this.currentUnidade = null;
-                this.currentChapter = null;
-                this.saveData();
-                this.renderYears();
-                this.showYearContent();
             },
 
             countChapters() {
