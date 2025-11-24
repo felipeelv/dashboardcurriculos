@@ -1144,21 +1144,15 @@
                 const chapterData = this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres[this.currentBimester].unidades[this.currentUnidade].capitulos[this.currentChapter];
                 const unidadeData = this.data[this.currentYear].disciplinas[this.currentDiscipline].bimestres[this.currentBimester].unidades[this.currentUnidade];
 
-                const statusMap = { planned: 'Planejado', progress: 'Em Progresso', done: 'Concluído' };
-                const statusClass = {
-                    planned: 'status-badge-planned',
-                    progress: 'status-badge-progress',
-                    done: 'status-badge-done'
-                };
-
                 const html = `
-                    <div class="chapter-header">
+                    <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: start; border-bottom: 1px solid var(--border-subtle); padding-bottom: 16px;">
                         <div>
-                            <div class="chapter-title">📄 ${chapterData.titulo}</div>
-                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">${unidadeData.nome} · Bimestre ${this.currentBimester} · ${this.currentDiscipline}</p>
+                            <button class="btn btn-secondary btn-sm" onclick="ChapterManager.selectUnidade('${this.currentUnidade}')">← Voltar</button>
+                            <div style="font-size: 1.8rem; font-weight: 600; margin: 16px 0 8px 0;">📄 ${chapterData.titulo}</div>
+                            <p style="font-size: 0.95rem; color: var(--text-secondary);">${unidadeData.nome} · Bimestre ${this.currentBimester} · ${this.currentDiscipline}</p>
                         </div>
-                        <div class="chapter-actions">
-                            <select id="statusSelect" class="form-control" style="width: auto; padding: 8px;">
+                        <div>
+                            <select id="statusSelect" class="form-control" style="width: auto; padding: 8px; min-width: 150px;">
                                 <option value="planned" ${chapterData.status === 'planned' ? 'selected' : ''}>Planejado</option>
                                 <option value="progress" ${chapterData.status === 'progress' ? 'selected' : ''}>Em Progresso</option>
                                 <option value="done" ${chapterData.status === 'done' ? 'selected' : ''}>Concluído</option>
