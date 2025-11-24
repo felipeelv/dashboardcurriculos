@@ -801,16 +801,16 @@
             init() {
                 const tabButtons = document.querySelectorAll('.tab-button');
                 tabButtons.forEach(btn => {
-                    btn.addEventListener('click', () => this.switchTab(btn.dataset.tab));
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab, e.target));
                 });
             },
 
-            switchTab(tabName) {
+            switchTab(tabName, btnElement) {
                 // Update buttons
                 document.querySelectorAll('.tab-button').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                event.target.classList.add('active');
+                btnElement.classList.add('active');
 
                 // Update content
                 document.querySelectorAll('.tab-content').forEach(content => {
